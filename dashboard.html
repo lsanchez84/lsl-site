@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LSL — Members Home</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,800;1,400&family=Outfit:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0A0A12; --bg-card: #0F0F1C; --bg-card2: #151528; --bg-warm: #110E18;
+    --accent: #B06AFF; --accent2: #D4A0FF; --accent-hot: #FF6B9D; --accent-gold: #FFD080;
+    --accent-dim: rgba(176,106,255,0.08); --accent-glow: rgba(176,106,255,0.25);
+    --text: #F2EFF9; --text-muted: #9490AD; --text-faint: #3E3A55;
+    --border: rgba(255,255,255,0.04); --border-accent: rgba(176,106,255,0.18);
+    --green: #00E5A0; --green-dim: rgba(0,229,160,0.08);
+    --sidebar: 240px;
+  }
+  html, body { height: 100%; }
+  body { background: var(--bg); color: var(--text); font-family: 'Outfit', sans-serif; font-weight: 300; line-height: 1.6; overflow-x: hidden; display: flex; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes dotPulse { 0%, 100% { opacity: 1; box-shadow: 0 0 6px var(--green); } 50% { opacity: 0.4; } }
+  @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+  @keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: var(--sidebar);
+    min-height: 100vh;
+    background: var(--bg-card);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    z-index: 50;
+    animation: slideIn 0.5s cubic-bezier(0.16,1,0.3,1) both;
+  }
+
+  .sidebar-logo {
+    padding: 1.8rem 1.5rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .sidebar-logo-text {
+    font-family: 'Playfair Display', serif;
+    font-weight: 800;
+    font-size: 1.4rem;
+    color: var(--text);
+  }
+  .sidebar-logo-text span {
+    background: linear-gradient(135deg, var(--accent), var(--accent-hot));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .sidebar-logo-sub {
+    font-size: 0.7rem;
+    color: var(--text-faint);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-top: 0.2rem;
+  }
+
+  .sidebar-nav {
+    flex: 1;
+    padding: 1.25rem 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .nav-section-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    padding: 0.75rem 0.75rem 0.4rem;
+    font-weight: 500;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.65rem 0.75rem;
+    border-radius: 10px;
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    font-weight: 400;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    position: relative;
+  }
+  .nav-item:hover { background: var(--accent-dim); color: var(--text); }
+  .nav-item.active { background: var(--accent-dim); color: var(--accent2); }
+  .nav-item.active::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 20%; bottom: 20%;
+    width: 3px;
+    background: linear-gradient(180deg, var(--accent), var(--accent-hot));
+    border-radius: 0 3px 3px 0;
+  }
+  .nav-item svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+  .nav-badge {
+    margin-left: auto;
+    background: var(--accent-hot);
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 0.15rem 0.45rem;
+    border-radius: 100px;
+    min-width: 18px;
+    text-align: center;
+  }
+
+  .sidebar-profile {
+    padding: 1rem 1.25rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    border-radius: 0 0 0 0;
+  }
+  .sidebar-profile:hover { background: var(--accent-dim); }
+
+  .profile-avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent-hot));
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+    position: relative;
+  }
+  .profile-avatar::after {
+    content: '';
+    position: absolute;
+    bottom: 1px; right: 1px;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    border: 2px solid var(--bg-card);
+    animation: dotPulse 2s ease-in-out infinite;
+  }
+  .profile-name { font-size: 0.85rem; font-weight: 500; color: var(--text); }
+  .profile-type { font-size: 0.72rem; color: var(--text-muted); }
+
+  /* ── MAIN ── */
+  .main {
+    margin-left: var(--sidebar);
+    flex: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── TOP BAR ── */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 2rem;
+    border-bottom: 1px solid var(--border);
+    background: rgba(10,10,18,0.6);
+    backdrop-filter: blur(16px);
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    animation: fadeIn 0.5s ease both;
+  }
+
+  .topbar-greeting {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--text);
+  }
+  .topbar-greeting span {
+    background: linear-gradient(135deg, var(--accent2), var(--accent-hot));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+
+  .topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .topbar-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 1rem;
+    border-radius: 100px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-muted);
+  }
+  .topbar-btn:hover { border-color: var(--border-accent); color: var(--text); background: var(--accent-dim); }
+  .topbar-btn svg { width: 14px; height: 14px; }
+
+  .topbar-btn.primary {
+    background: linear-gradient(135deg, var(--accent), var(--accent-hot));
+    border: none;
+    color: #fff;
+  }
+  .topbar-btn.primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(176,106,255,0.3); }
+
+  .notif-btn {
+    position: relative;
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: transparent;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--text-muted);
+  }
+  .notif-btn:hover { border-color: var(--border-accent); background: var(--accent-dim); color: var(--text); }
+  .notif-btn svg { width: 16px; height: 16px; }
+  .notif-dot {
+    position: absolute;
+    top: 6px; right: 6px;
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--accent-hot);
+    border: 2px solid var(--bg);
+  }
+
+  /* ── CONTENT ── */
+  .content {
+    padding: 2rem;
+    flex: 1;
+  }
+
+  /* ── STATS ROW ── */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+    animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.1s both;
+  }
+
+  .stat-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.25rem 1.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s, transform 0.2s;
+  }
+  .stat-card:hover { border-color: var(--border-accent); transform: translateY(-2px); }
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+  }
+  .stat-card.s1::before { background: linear-gradient(90deg, var(--accent), transparent); }
+  .stat-card.s2::before { background: linear-gradient(90deg, var(--accent-hot), transparent); }
+  .stat-card.s3::before { background: linear-gradient(90deg, var(--accent-gold), transparent); }
+  .stat-card.s4::before { background: linear-gradient(90deg, var(--green), transparent); }
+
+  .stat-label { font-size: 0.72rem; color: var(--text-faint); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.5rem; font-weight: 500; }
+  .stat-value { font-family: 'Playfair Display', serif; font-weight: 800; font-size: 2rem; color: var(--text); line-height: 1; margin-bottom: 0.3rem; }
+  .stat-sub { font-size: 0.75rem; color: var(--text-muted); }
+  .stat-trend { font-size: 0.72rem; color: var(--green); margin-top: 0.3rem; }
+
+  /* ── GRID LAYOUT ── */
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 1.5rem;
+    animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.2s both;
+  }
+
+  .grid-left { display: flex; flex-direction: column; gap: 1.5rem; }
+  .grid-right { display: flex; flex-direction: column; gap: 1.5rem; }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    transition: border-color 0.3s;
+  }
+  .card:hover { border-color: rgba(255,255,255,0.07); }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .card-title {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--text);
+  }
+  .card-action {
+    font-size: 0.75rem;
+    color: var(--accent2);
+    cursor: pointer;
+    transition: color 0.2s;
+    text-decoration: none;
+  }
+  .card-action:hover { color: var(--accent-hot); }
+
+  /* ── MEMBER GRID ── */
+  .member-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+  }
+
+  .member-card {
+    background: var(--bg-card);
+    padding: 1.25rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    position: relative;
+  }
+  .member-card:hover { background: var(--bg-card2); }
+
+  .member-photo {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--bg-card2), var(--bg-warm));
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-faint);
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+
+  .member-photo-gradient {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(176,106,255,0.08), rgba(255,107,157,0.06));
+  }
+
+  .member-online {
+    position: absolute;
+    top: 8px; right: 8px;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    border: 2px solid var(--bg-card);
+    animation: dotPulse 2s ease-in-out infinite;
+  }
+
+  .member-verified {
+    position: absolute;
+    bottom: 8px; left: 8px;
+    background: rgba(176,106,255,0.9);
+    color: #fff;
+    font-size: 0.6rem;
+    font-weight: 600;
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    letter-spacing: 0.05em;
+  }
+
+  .member-name { font-weight: 500; font-size: 0.88rem; color: var(--text); margin-bottom: 0.15rem; }
+  .member-meta { font-size: 0.72rem; color: var(--text-muted); }
+  .member-tags { display: flex; gap: 0.3rem; margin-top: 0.5rem; flex-wrap: wrap; }
+  .member-tag {
+    font-size: 0.62rem;
+    padding: 0.15rem 0.45rem;
+    border-radius: 100px;
+    background: var(--accent-dim);
+    color: var(--accent2);
+    border: 1px solid var(--border-accent);
+    font-weight: 500;
+  }
+
+  /* ── EVENTS LIST ── */
+  .event-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .event-item:last-child { border-bottom: none; }
+  .event-item:hover { background: var(--bg-card2); }
+
+  .event-date {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background: var(--accent-dim);
+    border: 1px solid var(--border-accent);
+  }
+  .event-date-day { font-family: 'Playfair Display', serif; font-weight: 800; font-size: 1rem; color: var(--accent2); line-height: 1; }
+  .event-date-mon { font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; }
+
+  .event-info { flex: 1; min-width: 0; }
+  .event-name { font-weight: 500; font-size: 0.88rem; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .event-meta { font-size: 0.72rem; color: var(--text-muted); margin-top: 0.15rem; }
+
+  .event-badge {
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 0.2rem 0.6rem;
+    border-radius: 100px;
+    flex-shrink: 0;
+  }
+  .event-badge.open { background: var(--green-dim); color: var(--green); border: 1px solid rgba(0,229,160,0.2); }
+  .event-badge.full { background: rgba(255,107,157,0.08); color: var(--accent-hot); border: 1px solid rgba(255,107,157,0.2); }
+  .event-badge.soon { background: rgba(255,208,128,0.08); color: var(--accent-gold); border: 1px solid rgba(255,208,128,0.2); }
+
+  /* ── MESSAGES ── */
+  .message-item {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    padding: 0.875rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .message-item:last-child { border-bottom: none; }
+  .message-item:hover { background: var(--bg-card2); }
+  .message-item.unread { background: rgba(176,106,255,0.03); }
+
+  .msg-avatar {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--bg-card2), var(--bg-warm));
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    flex-shrink: 0;
+    position: relative;
+  }
+  .msg-avatar.online::after {
+    content: '';
+    position: absolute;
+    bottom: 1px; right: 1px;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    border: 2px solid var(--bg-card);
+  }
+  .msg-body { flex: 1; min-width: 0; }
+  .msg-name { font-size: 0.85rem; font-weight: 500; color: var(--text); }
+  .msg-preview { font-size: 0.75rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .msg-time { font-size: 0.68rem; color: var(--text-faint); flex-shrink: 0; }
+  .msg-unread-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+
+  /* ── QUICK ACTIONS ── */
+  .quick-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    padding: 1.25rem 1.5rem;
+  }
+  .quick-action {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+    background: transparent;
+  }
+  .quick-action:hover { border-color: var(--border-accent); background: var(--accent-dim); }
+  .quick-action svg { width: 20px; height: 20px; }
+  .quick-action-label { font-size: 0.75rem; color: var(--text-muted); font-weight: 400; }
+
+  /* ── WELCOME BANNER ── */
+  .welcome-banner {
+    background: linear-gradient(135deg, rgba(176,106,255,0.1), rgba(255,107,157,0.06));
+    border: 1px solid var(--border-accent);
+    border-radius: 20px;
+    padding: 1.5rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    animation: fadeUp 0.5s cubic-bezier(0.16,1,0.3,1) both;
+    position: relative;
+    overflow: hidden;
+  }
+  .welcome-banner::before {
+    content: '';
+    position: absolute;
+    top: -50%; right: -10%;
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(176,106,255,0.08), transparent 70%);
+    pointer-events: none;
+  }
+  .welcome-text h2 { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.2rem; margin-bottom: 0.3rem; }
+  .welcome-text h2 em { font-style: italic; background: linear-gradient(135deg, var(--accent2), var(--accent-hot)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .welcome-text p { font-size: 0.85rem; color: var(--text-muted); }
+  .welcome-btn {
+    background: linear-gradient(135deg, var(--accent), var(--accent-hot));
+    color: #fff;
+    border: none;
+    padding: 0.65rem 1.4rem;
+    border-radius: 100px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: all 0.2s;
+  }
+  .welcome-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(176,106,255,0.3); }
+
+  /* ── LOCK OVERLAY ── */
+  .lock-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10,10,18,0.92);
+    backdrop-filter: blur(12px);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.4s ease both;
+  }
+  .lock-modal {
+    background: var(--bg-card);
+    border: 1px solid var(--border-accent);
+    border-radius: 24px;
+    padding: 2.5rem;
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+    animation: fadeUp 0.5s cubic-bezier(0.16,1,0.3,1) 0.1s both;
+  }
+  .lock-icon {
+    width: 60px; height: 60px;
+    border-radius: 18px;
+    background: var(--accent-dim);
+    border: 1px solid var(--border-accent);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 1.5rem;
+  }
+  .lock-icon svg { width: 28px; height: 28px; }
+  .lock-modal h2 { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.4rem; margin-bottom: 0.5rem; }
+  .lock-modal h2 em { font-style: italic; background: linear-gradient(135deg, var(--accent2), var(--accent-hot)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .lock-modal p { font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1.75rem; line-height: 1.65; }
+  .lock-input {
+    width: 100%;
+    background: var(--bg-card2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.95rem;
+    color: var(--text);
+    margin-bottom: 0.75rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .lock-input:focus { border-color: var(--border-accent); }
+  .lock-input::placeholder { color: var(--text-faint); }
+  .lock-btn {
+    width: 100%;
+    background: linear-gradient(135deg, var(--accent), var(--accent-hot));
+    color: #fff;
+    border: none;
+    padding: 0.85rem;
+    border-radius: 12px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 0.75rem;
+  }
+  .lock-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(176,106,255,0.3); }
+  .lock-back { font-size: 0.78rem; color: var(--text-faint); cursor: pointer; transition: color 0.2s; text-decoration: none; display: block; }
+  .lock-back:hover { color: var(--text-muted); }
+
+  /* ── GRAIN ── */
+  body::after { content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 9999; opacity: 0.02; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); background-repeat: repeat; background-size: 128px 128px; }
+
+  @media (max-width: 900px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; }
+    .stats-row { grid-template-columns: repeat(2,1fr); }
+    .dashboard-grid { grid-template-columns: 1fr; }
+    .member-grid { grid-template-columns: repeat(2,1fr); }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOCK SCREEN -->
+<div class="lock-overlay" id="lockOverlay">
+  <div class="lock-modal">
+    <div class="lock-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#B06AFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="11" width="18" height="11" rx="2"/>
+        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        <circle cx="12" cy="16.5" r="1.5"/>
+      </svg>
+    </div>
+    <h2>Welcome to <em>LSL</em></h2>
+    <p>Members-only access. Enter your invite code or email to continue into the community.</p>
+    <input class="lock-input" type="email" placeholder="Your email address" id="lockEmail">
+    <input class="lock-input" type="password" placeholder="Password or invite code" id="lockCode">
+    <button class="lock-btn" onclick="unlock()">Enter the Community</button>
+    <a href="index.html" class="lock-back">← Back to homepage</a>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="sidebar-logo-text">LSL<span>.</span></div>
+    <div class="sidebar-logo-sub">Members Community</div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Main</div>
+    <a class="nav-item active" href="#">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Home
+    </a>
+    <a class="nav-item" href="#">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Browse Members
+    </a>
+    <a class="nav-item" href="#">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      Events
+      <span class="nav-badge">6</span>
+    </a>
+    <a class="nav-item" href="#">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      Messages
+      <span class="nav-badge">3</span>
+    </a>
+    <div class="nav-section-label" style="margin-top:0.5rem;">Discover</div>
+    <a class="nav-item" href="#">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      Search
+    </a>
+    <a class="nav-item" href="#">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      Interests
+    </a>
+    <div class="nav-section-label" style="margin-top:0.5rem;">Account</div>
+    <a class="nav-item" href="#">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/></svg>
+      My Profile
+    </a>
+    <a class="nav-item" href="#">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+      Settings
+    </a>
+  </nav>
+  <div class="sidebar-profile">
+    <div class="profile-avatar">J</div>
+    <div>
+      <div class="profile-name">J &amp; K</div>
+      <div class="profile-type">Couple · Los Angeles</div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-greeting">Good evening, <span>J &amp; K</span> 👋</div>
+    <div class="topbar-actions">
+      <button class="topbar-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        Search
+      </button>
+      <button class="notif-btn">
+        <div class="notif-dot"></div>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      </button>
+      <button class="topbar-btn primary">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Post Event
+      </button>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- WELCOME BANNER -->
+    <div class="welcome-banner">
+      <div class="welcome-text">
+        <h2>Your profile is <em>live.</em> Start connecting.</h2>
+        <p>You have 3 new connection requests and 2 events near Los Angeles this week.</p>
+      </div>
+      <button class="welcome-btn">View Requests</button>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-row">
+      <div class="stat-card s1">
+        <div class="stat-label">Profile Views</div>
+        <div class="stat-value">124</div>
+        <div class="stat-trend">↑ 18 this week</div>
+      </div>
+      <div class="stat-card s2">
+        <div class="stat-label">Connections</div>
+        <div class="stat-value">31</div>
+        <div class="stat-sub">3 pending requests</div>
+      </div>
+      <div class="stat-card s3">
+        <div class="stat-label">Events Near You</div>
+        <div class="stat-value">8</div>
+        <div class="stat-sub">Next: Apr 12</div>
+      </div>
+      <div class="stat-card s4">
+        <div class="stat-label">Messages</div>
+        <div class="stat-value">3</div>
+        <div class="stat-sub">Unread today</div>
+      </div>
+    </div>
+
+    <!-- MAIN GRID -->
+    <div class="dashboard-grid">
+      <div class="grid-left">
+
+        <!-- MEMBERS NEARBY -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Members Near You</div>
+            <a class="card-action" href="#">Browse all →</a>
+          </div>
+          <div class="member-grid">
+            <!-- Card 1 -->
+            <div class="member-card">
+              <div class="member-photo">
+                <div class="member-photo-gradient"></div>
+                <span>J&K</span>
+                <div class="member-online"></div>
+                <div class="member-verified">✓ Verified</div>
+              </div>
+              <div class="member-name">Alex &amp; Jordan</div>
+              <div class="member-meta">📍 Malibu · 12 mi</div>
+              <div class="member-tags"><span class="member-tag">Couples</span><span class="member-tag">Social</span></div>
+            </div>
+            <!-- Card 2 -->
+            <div class="member-card">
+              <div class="member-photo" style="background: linear-gradient(135deg, #1a1028, #150e20);">
+                <div class="member-photo-gradient"></div>
+                <span>SR</span>
+                <div class="member-online"></div>
+                <div class="member-verified">✓ Verified</div>
+              </div>
+              <div class="member-name">Sara &amp; Ray</div>
+              <div class="member-meta">📍 Burbank · 8 mi</div>
+              <div class="member-tags"><span class="member-tag">Couples</span><span class="member-tag">30s</span></div>
+            </div>
+            <!-- Card 3 -->
+            <div class="member-card">
+              <div class="member-photo" style="background: linear-gradient(135deg, #0f1820, #0a1018);">
+                <div class="member-photo-gradient"></div>
+                <span>CR</span>
+                <div class="member-verified">✓ Verified</div>
+              </div>
+              <div class="member-name">Chloe R.</div>
+              <div class="member-meta">📍 Hollywood · 5 mi</div>
+              <div class="member-tags"><span class="member-tag">Single F</span><span class="member-tag">Social</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- EVENTS -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Upcoming Events Near You</div>
+            <a class="card-action" href="#">View all →</a>
+          </div>
+          <div class="event-item">
+            <div class="event-date"><div class="event-date-day">12</div><div class="event-date-mon">Apr</div></div>
+            <div class="event-info">
+              <div class="event-name">Spring Social Mixer</div>
+              <div class="event-meta">📍 Pasadena · Private Residence · Couples &amp; Singles</div>
+            </div>
+            <div class="event-badge open">Open</div>
+          </div>
+          <div class="event-item">
+            <div class="event-date"><div class="event-date-day">19</div><div class="event-date-mon">Apr</div></div>
+            <div class="event-info">
+              <div class="event-name">Couples Night Out</div>
+              <div class="event-meta">📍 Hollywood · Bar Takeover · Couples Only</div>
+            </div>
+            <div class="event-badge soon">3 spots</div>
+          </div>
+          <div class="event-item">
+            <div class="event-date"><div class="event-date-day">26</div><div class="event-date-mon">Apr</div></div>
+            <div class="event-info">
+              <div class="event-name">Beach Meetup — Malibu</div>
+              <div class="event-meta">📍 Malibu · Outdoor Social · All Welcome</div>
+            </div>
+            <div class="event-badge open">Open</div>
+          </div>
+          <div class="event-item">
+            <div class="event-date"><div class="event-date-day">3</div><div class="event-date-mon">May</div></div>
+            <div class="event-info">
+              <div class="event-name">Private Villa Party</div>
+              <div class="event-meta">📍 Calabasas · Members Only · 18 attending</div>
+            </div>
+            <div class="event-badge full">Full</div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="grid-right">
+
+        <!-- MESSAGES -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Messages</div>
+            <a class="card-action" href="#">All →</a>
+          </div>
+          <div class="message-item unread">
+            <div class="msg-avatar online">AJ</div>
+            <div class="msg-body">
+              <div class="msg-name">Alex &amp; Jordan</div>
+              <div class="msg-preview">Hey! Loved your profile, would love to...</div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.3rem;">
+              <div class="msg-time">2m ago</div>
+              <div class="msg-unread-dot"></div>
+            </div>
+          </div>
+          <div class="message-item unread">
+            <div class="msg-avatar">SR</div>
+            <div class="msg-body">
+              <div class="msg-name">Sara &amp; Ray</div>
+              <div class="msg-preview">Are you going to the Pasadena mixer?</div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.3rem;">
+              <div class="msg-time">1h ago</div>
+              <div class="msg-unread-dot"></div>
+            </div>
+          </div>
+          <div class="message-item">
+            <div class="msg-avatar online">TG</div>
+            <div class="msg-body">
+              <div class="msg-name">The Garcias</div>
+              <div class="msg-preview">Thanks for connecting! We're in Calabasas...</div>
+            </div>
+            <div class="msg-time">Yesterday</div>
+          </div>
+        </div>
+
+        <!-- QUICK ACTIONS -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Quick Actions</div>
+          </div>
+          <div class="quick-actions">
+            <button class="quick-action">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#B06AFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              <span class="quick-action-label">Edit Profile</span>
+            </button>
+            <button class="quick-action">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#FF6B9D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              <span class="quick-action-label">Post Event</span>
+            </button>
+            <button class="quick-action">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#FFD080" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+              <span class="quick-action-label">Search</span>
+            </button>
+            <button class="quick-action">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#00E5A0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              <span class="quick-action-label">New Message</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function unlock() {
+  const email = document.getElementById('lockEmail').value;
+  const code = document.getElementById('lockCode').value;
+  if (email || code) {
+    document.getElementById('lockOverlay').style.opacity = '0';
+    document.getElementById('lockOverlay').style.transition = 'opacity 0.4s ease';
+    setTimeout(() => { document.getElementById('lockOverlay').style.display = 'none'; }, 400);
+  } else {
+    document.getElementById('lockEmail').style.borderColor = 'rgba(255,107,157,0.5)';
+    setTimeout(() => { document.getElementById('lockEmail').style.borderColor = ''; }, 1500);
+  }
+}
+document.getElementById('lockCode').addEventListener('keydown', e => { if (e.key === 'Enter') unlock(); });
+document.getElementById('lockEmail').addEventListener('keydown', e => { if (e.key === 'Enter') unlock(); });
+</script>
+</body>
+</html>
