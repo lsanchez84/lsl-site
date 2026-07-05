@@ -3,7 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0A0A12">
 <title>LSL — The Lifestyle Community</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,800;1,400;1,700&family=Outfit:wght@200;300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -27,11 +32,33 @@
   @keyframes dotPulse { 0%, 100% { opacity: 1; box-shadow: 0 0 6px var(--green); } 50% { opacity: 0.4; } }
   @keyframes heroTextReveal { from { opacity: 0; transform: translateY(30px) skewY(2deg); } to { opacity: 1; transform: translateY(0) skewY(0); } }
   @keyframes accentUnderline { from { width: 0; } to { width: 100%; } }
+  @keyframes gateIn { from { opacity: 0; transform: translateY(20px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+  @keyframes ringGlow { 0%,100% { filter: drop-shadow(0 0 6px rgba(176,106,255,0.4)); } 50% { filter: drop-shadow(0 0 14px rgba(255,107,157,0.5)); } }
   .reveal { opacity: 0; transform: translateY(40px); transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1); }
   .reveal.visible { opacity: 1; transform: translateY(0); }
   .reveal-scale { opacity: 0; transform: scale(0.9); transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1); }
   .reveal-scale.visible { opacity: 1; transform: scale(1); }
   .delay-1 { transition-delay: 0.1s; } .delay-2 { transition-delay: 0.2s; } .delay-3 { transition-delay: 0.3s; }
+
+  /* ── AGE GATE ── */
+  .age-gate { position: fixed; inset: 0; z-index: 10000; background: rgba(6,6,12,0.92); backdrop-filter: blur(28px) saturate(1.2); display: flex; align-items: center; justify-content: center; padding: 1.5rem; }
+  .age-gate.hidden { display: none; }
+  .age-modal { max-width: 440px; width: 100%; background: linear-gradient(180deg, var(--bg-card2), var(--bg-card)); border: 1px solid var(--border-accent); border-radius: 28px; padding: 3rem 2.5rem; text-align: center; animation: gateIn 0.7s cubic-bezier(0.16,1,0.3,1) both; box-shadow: 0 40px 120px rgba(0,0,0,0.6), 0 0 80px rgba(176,106,255,0.08); }
+  .age-logo { font-family: 'Playfair Display', serif; font-weight: 800; font-size: 2rem; margin-bottom: 0.5rem; }
+  .age-logo span { background: linear-gradient(135deg, var(--accent), var(--accent-hot)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .age-rule { width: 48px; height: 1px; margin: 1.25rem auto; background: linear-gradient(90deg, transparent, var(--accent-hot), transparent); }
+  .age-modal h2 { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.35rem; margin-bottom: 0.75rem; }
+  .age-modal h2 em { font-style: italic; background: linear-gradient(135deg, var(--accent2), var(--accent-hot)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .age-modal p { font-size: 0.88rem; color: var(--text-muted); line-height: 1.7; margin-bottom: 2rem; }
+  .age-actions { display: flex; flex-direction: column; gap: 0.75rem; }
+  .age-enter { background: linear-gradient(135deg, var(--accent), var(--accent-hot)); color: #fff; border: none; padding: 0.95rem 2rem; border-radius: 100px; font-family: 'Outfit', sans-serif; font-size: 1rem; font-weight: 500; cursor: pointer; transition: transform 0.2s, box-shadow 0.3s; }
+  .age-enter:hover { transform: translateY(-2px); box-shadow: 0 10px 36px rgba(176,106,255,0.35); }
+  .age-leave { background: transparent; color: var(--text-faint); border: none; padding: 0.6rem; font-family: 'Outfit', sans-serif; font-size: 0.82rem; cursor: pointer; transition: color 0.3s; }
+  .age-leave:hover { color: var(--text-muted); }
+  .age-fine { font-size: 0.68rem; color: var(--text-faint); letter-spacing: 0.08em; text-transform: uppercase; margin-top: 1.5rem; }
+  body.gated { overflow: hidden; }
+
+  /* ── NAV ── */
   nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 1.2rem 2.5rem; background: rgba(10,10,18,0.7); backdrop-filter: blur(24px) saturate(1.4); border-bottom: 1px solid var(--border); animation: fadeIn 0.8s ease both; }
   .nav-logo { font-family: 'Playfair Display', serif; font-weight: 800; font-size: 1.5rem; color: var(--text); }
   .nav-logo span { background: linear-gradient(135deg, var(--accent), var(--accent-hot)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
@@ -40,8 +67,10 @@
   .nav-links a::after { content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 1px; background: linear-gradient(90deg, var(--accent), var(--accent-hot)); transition: width 0.3s cubic-bezier(0.16,1,0.3,1); }
   .nav-links a:hover { color: var(--text); }
   .nav-links a:hover::after { width: 100%; }
-  .nav-cta { background: linear-gradient(135deg, var(--accent), var(--accent-hot)); color: #fff; border: none; padding: 0.6rem 1.6rem; border-radius: 100px; font-family: 'Outfit', sans-serif; font-size: 0.88rem; font-weight: 500; cursor: pointer; transition: transform 0.2s, box-shadow 0.3s; }
+  .nav-cta { background: linear-gradient(135deg, var(--accent), var(--accent-hot)); color: #fff; border: none; padding: 0.6rem 1.6rem; border-radius: 100px; font-family: 'Outfit', sans-serif; font-size: 0.88rem; font-weight: 500; cursor: pointer; transition: transform 0.2s, box-shadow 0.3s; text-decoration: none; display: inline-block; }
   .nav-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(176,106,255,0.3); }
+
+  /* ── HERO ── */
   .hero { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 8rem 2rem 5rem; position: relative; overflow: hidden; }
   .hero-orb { position: absolute; border-radius: 50%; filter: blur(80px); pointer-events: none; }
   .hero-orb-1 { width: 600px; height: 600px; top: -15%; left: 20%; background: radial-gradient(circle, rgba(176,106,255,0.15), transparent 70%); animation: floatSlow 12s ease-in-out infinite; }
@@ -53,13 +82,16 @@
   .hero h1 { font-family: 'Playfair Display', serif; font-weight: 800; font-size: clamp(3rem, 7.5vw, 5.8rem); line-height: 1.04; letter-spacing: -0.025em; margin-bottom: 1.8rem; max-width: 880px; animation: heroTextReveal 1s cubic-bezier(0.16,1,0.3,1) 0.4s both; }
   .hero h1 em { font-style: italic; background: linear-gradient(135deg, var(--accent2), var(--accent-hot), var(--accent-gold)); background-size: 200% 200%; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; animation: shimmer 6s linear infinite; position: relative; }
   .hero h1 em::after { content: ''; position: absolute; bottom: 2px; left: 0; height: 2px; background: linear-gradient(90deg, var(--accent), var(--accent-hot)); border-radius: 2px; animation: accentUnderline 1s cubic-bezier(0.16,1,0.3,1) 1.4s both; }
-  .hero-sub { font-size: clamp(1rem, 2vw, 1.15rem); color: var(--text-muted); max-width: 540px; line-height: 1.8; margin-bottom: 3rem; animation: fadeUp 0.8s cubic-bezier(0.16,1,0.3,1) 0.7s both; }
+  .hero-sub { font-size: clamp(1rem, 2vw, 1.15rem); color: var(--text-muted); max-width: 560px; line-height: 1.8; margin-bottom: 3rem; animation: fadeUp 0.8s cubic-bezier(0.16,1,0.3,1) 0.7s both; }
+  .hero-sub strong { color: var(--text); font-weight: 500; }
   .hero-actions { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; justify-content: center; margin-bottom: 3.5rem; animation: fadeUp 0.8s cubic-bezier(0.16,1,0.3,1) 0.9s both; }
   .hero-disclaimer { font-size: 0.72rem; color: var(--text-faint); letter-spacing: 0.1em; text-transform: uppercase; animation: fadeIn 0.8s ease 1.2s both; }
   .btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent-hot)); color: #fff; border: none; padding: 0.9rem 2.2rem; border-radius: 100px; font-family: 'Outfit', sans-serif; font-size: 1rem; font-weight: 500; cursor: pointer; transition: all 0.3s cubic-bezier(0.16,1,0.3,1); text-decoration: none; display: inline-block; position: relative; overflow: hidden; }
   .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(176,106,255,0.35), 0 4px 20px rgba(255,107,157,0.25); }
   .btn-ghost { background: transparent; color: var(--text-muted); border: 1px solid rgba(255,255,255,0.08); padding: 0.9rem 2.2rem; border-radius: 100px; font-family: 'Outfit', sans-serif; font-size: 1rem; cursor: pointer; transition: all 0.3s; text-decoration: none; display: inline-block; }
   .btn-ghost:hover { border-color: var(--accent-glow); color: var(--text); background: var(--accent-dim); }
+
+  /* ── TRUST BAR ── */
   .trust-bar { display: flex; justify-content: center; flex-wrap: wrap; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); background: var(--bg-card); }
   .trust-item { display: flex; align-items: center; gap: 1rem; padding: 1.8rem 3rem; border-right: 1px solid var(--border); flex: 1; min-width: 220px; transition: background 0.4s; }
   .trust-item:last-child { border-right: none; }
@@ -72,10 +104,42 @@
   .trust-icon-wrap svg { width: 20px; height: 20px; }
   .trust-label { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 0.95rem; color: var(--text); display: block; }
   .trust-sub { font-size: 0.78rem; color: var(--text-muted); }
+
   section { padding: 7rem 2rem; max-width: 1200px; margin: 0 auto; }
   .section-label { font-size: 0.7rem; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; background: linear-gradient(135deg, var(--accent2), var(--accent-hot)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 1rem; }
   .section-title { font-family: 'Playfair Display', serif; font-weight: 700; font-size: clamp(2rem, 4.5vw, 3.2rem); letter-spacing: -0.02em; line-height: 1.12; margin-bottom: 1rem; }
-  .section-sub { color: var(--text-muted); font-size: 1.05rem; max-width: 480px; }
+  .section-title em { font-style: italic; background: linear-gradient(135deg, var(--accent2), var(--accent-hot)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .section-sub { color: var(--text-muted); font-size: 1.05rem; max-width: 520px; }
+
+  /* ── MATCHING DEMO ── */
+  .match-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; margin-top: 4rem; }
+  .match-copy p { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 2rem; line-height: 1.8; }
+  .chip-label { font-size: 0.7rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 1rem; }
+  .chips { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+  .chip { background: var(--bg-card); border: 1px solid rgba(255,255,255,0.07); color: var(--text-muted); padding: 0.55rem 1.15rem; border-radius: 100px; font-family: 'Outfit', sans-serif; font-size: 0.85rem; font-weight: 400; cursor: pointer; transition: all 0.3s cubic-bezier(0.16,1,0.3,1); user-select: none; }
+  .chip:hover { border-color: var(--accent-glow); color: var(--text); transform: translateY(-1px); }
+  .chip.on { background: linear-gradient(135deg, rgba(176,106,255,0.18), rgba(255,107,157,0.12)); border-color: var(--accent); color: var(--text); box-shadow: 0 4px 20px rgba(176,106,255,0.15); }
+  .match-hint { font-size: 0.75rem; color: var(--text-faint); margin-top: 1.25rem; font-style: italic; }
+  .match-card { background: linear-gradient(180deg, var(--bg-card2), var(--bg-card)); border: 1px solid var(--border-accent); border-radius: 28px; padding: 2.75rem 2.5rem; text-align: center; position: relative; overflow: hidden; box-shadow: 0 30px 80px rgba(0,0,0,0.4); }
+  .match-card::before { content: ''; position: absolute; top: -50%; left: -20%; width: 140%; height: 100%; background: radial-gradient(ellipse, rgba(176,106,255,0.08), transparent 65%); pointer-events: none; }
+  .match-names { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.4rem; margin-bottom: 0.25rem; }
+  .match-meta { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 2rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
+  .match-meta .vbadge { display: inline-flex; align-items: center; gap: 0.3rem; color: var(--green); font-size: 0.75rem; }
+  .match-meta .vbadge svg { width: 12px; height: 12px; }
+  .ring-wrap { position: relative; width: 190px; height: 190px; margin: 0 auto 1.75rem; }
+  .ring-wrap svg { transform: rotate(-90deg); animation: ringGlow 5s ease-in-out infinite; }
+  .ring-bg { fill: none; stroke: rgba(255,255,255,0.05); stroke-width: 9; }
+  .ring-fg { fill: none; stroke: url(#ringGrad); stroke-width: 9; stroke-linecap: round; transition: stroke-dashoffset 0.9s cubic-bezier(0.16,1,0.3,1); }
+  .ring-num { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .ring-num .val { font-family: 'Playfair Display', serif; font-weight: 800; font-size: 3rem; line-height: 1; background: linear-gradient(135deg, var(--accent2), var(--accent-hot)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .ring-num .lbl { font-size: 0.65rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-faint); margin-top: 0.4rem; }
+  .match-verdict { font-size: 0.9rem; color: var(--text-muted); min-height: 2.5em; transition: opacity 0.3s; }
+  .match-verdict strong { color: var(--text); font-weight: 500; }
+  .match-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; justify-content: center; margin-top: 1.25rem; }
+  .mtag { font-size: 0.7rem; padding: 0.3rem 0.8rem; border-radius: 100px; background: var(--green-dim); border: 1px solid rgba(0,229,160,0.18); color: var(--green); transition: all 0.3s; }
+  .mtag.off { background: rgba(255,255,255,0.02); border-color: rgba(255,255,255,0.05); color: var(--text-faint); }
+
+  /* ── STEPS ── */
   .steps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; margin-top: 4rem; border-radius: 24px; overflow: hidden; background: rgba(255,255,255,0.03); }
   .step { background: var(--bg-card); padding: 3rem 2.5rem; position: relative; overflow: hidden; transition: background 0.4s; }
   .step:hover { background: var(--bg-card2); }
@@ -90,21 +154,63 @@
   .step-num { font-family: 'Playfair Display', serif; font-weight: 800; font-size: 5rem; position: absolute; top: 1.5rem; right: 1.5rem; line-height: 1; background: linear-gradient(180deg, rgba(255,255,255,0.04), transparent); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; pointer-events: none; }
   .step h3 { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.2rem; margin-bottom: 0.8rem; }
   .step p { font-size: 0.92rem; color: var(--text-muted); line-height: 1.75; }
-  .why-section { background: var(--bg-warm); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); max-width: 100%; padding: 7rem 2rem; position: relative; overflow: hidden; }
-  .why-inner { max-width: 1200px; margin: 0 auto; }
-  .why-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: rgba(255,255,255,0.03); border-radius: 24px; overflow: hidden; margin-top: 4rem; }
-  .why-col-header { padding: 1.3rem 2rem; font-weight: 600; font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase; }
-  .why-col-header.old { background: rgba(255,255,255,0.02); color: var(--text-faint); border-bottom: 1px solid var(--border); }
-  .why-col-header.new { background: linear-gradient(135deg, rgba(176,106,255,0.08), rgba(255,107,157,0.04)); color: var(--accent2); border-bottom: 1px solid var(--border-accent); }
-  .why-cell { padding: 1.15rem 2rem; font-size: 0.92rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.85rem; transition: background 0.3s; }
-  .why-cell:last-child { border-bottom: none; }
-  .why-cell.old { background: rgba(255,255,255,0.015); color: var(--text-muted); }
-  .why-cell.old .why-icon { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); }
-  .why-cell.old .why-icon svg { width: 10px; height: 10px; }
-  .why-cell.new { background: var(--bg-card); color: var(--text); }
-  .why-cell.new:hover { background: var(--bg-card2); }
-  .why-cell.new .why-icon { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; background: var(--green-dim); border: 1px solid rgba(0,229,160,0.2); }
-  .why-cell.new .why-icon svg { width: 10px; height: 10px; }
+
+  /* ── PHONE / PWA ── */
+  .phone-section { background: var(--bg-warm); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); max-width: 100%; padding: 7rem 2rem; position: relative; overflow: hidden; }
+  .phone-inner { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center; }
+  .phone-orb { position: absolute; width: 500px; height: 500px; border-radius: 50%; filter: blur(90px); background: radial-gradient(circle, rgba(255,107,157,0.08), transparent 70%); top: 10%; right: -10%; pointer-events: none; }
+  .phone-feature { display: flex; gap: 1rem; margin-bottom: 1.75rem; align-items: flex-start; }
+  .phone-feature .pfi { width: 36px; height: 36px; border-radius: 12px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, rgba(176,106,255,0.12), rgba(255,107,157,0.06)); border: 1px solid var(--border-accent); }
+  .phone-feature .pfi svg { width: 17px; height: 17px; }
+  .phone-feature h4 { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.02rem; margin-bottom: 0.2rem; }
+  .phone-feature p { font-size: 0.88rem; color: var(--text-muted); line-height: 1.7; }
+  .phone-mock-wrap { display: flex; justify-content: center; perspective: 1200px; }
+  .phone-mock { width: 290px; height: 590px; border-radius: 44px; background: linear-gradient(180deg, #1a1a2e, #12121f); border: 1px solid rgba(255,255,255,0.1); padding: 12px; box-shadow: 0 50px 120px rgba(0,0,0,0.6), 0 0 100px rgba(176,106,255,0.1), inset 0 1px 0 rgba(255,255,255,0.08); transform: rotateY(-8deg) rotateX(2deg); transition: transform 0.6s cubic-bezier(0.16,1,0.3,1); }
+  .phone-mock:hover { transform: rotateY(0deg) rotateX(0deg); }
+  .phone-screen { width: 100%; height: 100%; border-radius: 34px; background: var(--bg); overflow: hidden; position: relative; display: flex; flex-direction: column; }
+  .phone-notch { width: 90px; height: 22px; background: #12121f; border-radius: 0 0 14px 14px; margin: 0 auto; flex-shrink: 0; }
+  .ps-head { padding: 0.9rem 1.2rem 0.6rem; display: flex; justify-content: space-between; align-items: center; }
+  .ps-logo { font-family: 'Playfair Display', serif; font-weight: 800; font-size: 1.05rem; }
+  .ps-logo span { background: linear-gradient(135deg, var(--accent), var(--accent-hot)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .ps-avatar { width: 26px; height: 26px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-hot)); }
+  .ps-greet { padding: 0.4rem 1.2rem 0.8rem; }
+  .ps-greet .g1 { font-family: 'Playfair Display', serif; font-size: 1.02rem; font-weight: 700; }
+  .ps-greet .g2 { font-size: 0.68rem; color: var(--text-muted); }
+  .ps-stats { display: flex; gap: 0.5rem; padding: 0 1.2rem 0.9rem; }
+  .ps-stat { flex: 1; background: var(--bg-card2); border: 1px solid var(--border); border-radius: 14px; padding: 0.6rem 0.5rem; text-align: center; }
+  .ps-stat .n { font-family: 'Playfair Display', serif; font-weight: 800; font-size: 1rem; background: linear-gradient(135deg, var(--accent2), var(--accent-hot)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .ps-stat .l { font-size: 0.55rem; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.08em; }
+  .ps-sec { font-size: 0.62rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-faint); padding: 0.4rem 1.2rem 0.5rem; }
+  .ps-match { display: flex; align-items: center; gap: 0.7rem; margin: 0 1.2rem 0.55rem; background: var(--bg-card2); border: 1px solid var(--border); border-radius: 16px; padding: 0.65rem 0.8rem; }
+  .ps-match .pm-av { width: 34px; height: 34px; border-radius: 12px; flex-shrink: 0; }
+  .pm-av.a1 { background: linear-gradient(135deg, #B06AFF, #7C4DFF); }
+  .pm-av.a2 { background: linear-gradient(135deg, #FF6B9D, #FF9066); }
+  .pm-av.a3 { background: linear-gradient(135deg, #FFD080, #FF6B9D); }
+  .ps-match .pm-txt { flex: 1; min-width: 0; }
+  .ps-match .pm-n { font-size: 0.75rem; font-weight: 500; color: var(--text); }
+  .ps-match .pm-d { font-size: 0.6rem; color: var(--text-muted); }
+  .ps-match .pm-score { font-size: 0.68rem; font-weight: 600; color: var(--green); background: var(--green-dim); border: 1px solid rgba(0,229,160,0.2); padding: 0.2rem 0.55rem; border-radius: 100px; flex-shrink: 0; }
+  .ps-nav { margin-top: auto; display: flex; justify-content: space-around; padding: 0.8rem 1rem 1.2rem; border-top: 1px solid var(--border); }
+  .ps-nav svg { width: 18px; height: 18px; opacity: 0.4; }
+  .ps-nav svg.act { opacity: 1; }
+
+  /* ── PRICING ── */
+  .price-table-wrap { margin-top: 4rem; overflow-x: auto; border-radius: 24px; border: 1px solid var(--border); background: var(--bg-card); }
+  .price-table { width: 100%; border-collapse: collapse; min-width: 640px; }
+  .price-table th, .price-table td { padding: 1.15rem 1.5rem; text-align: center; font-size: 0.9rem; border-bottom: 1px solid var(--border); }
+  .price-table th { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1rem; padding-top: 1.75rem; }
+  .price-table td:first-child, .price-table th:first-child { text-align: left; color: var(--text-muted); font-family: 'Outfit', sans-serif; font-weight: 400; font-size: 0.88rem; }
+  .price-table tr:last-child td { border-bottom: none; }
+  .col-lsl { background: linear-gradient(180deg, rgba(176,106,255,0.09), rgba(255,107,157,0.04)); border-left: 1px solid var(--border-accent); border-right: 1px solid var(--border-accent); }
+  th.col-lsl { position: relative; }
+  th.col-lsl .best { display: block; font-family: 'Outfit', sans-serif; font-size: 0.6rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent-gold); margin-top: 0.3rem; }
+  .price-big { font-family: 'Playfair Display', serif; font-weight: 800; font-size: 1.5rem; background: linear-gradient(135deg, var(--accent2), var(--accent-hot)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .price-big small { font-size: 0.7rem; -webkit-text-fill-color: var(--text-muted); font-family: 'Outfit', sans-serif; font-weight: 400; }
+  .p-muted { color: var(--text-muted); }
+  .yes { color: var(--green); } .no { color: var(--text-faint); }
+  .price-note { font-size: 0.72rem; color: var(--text-faint); margin-top: 1.25rem; text-align: center; }
+
+  /* ── CTA / FOOTER ── */
   .cta-section { text-align: center; padding: 8rem 2rem; position: relative; overflow: hidden; }
   .cta-section::before { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 800px; height: 500px; background: radial-gradient(ellipse, rgba(176,106,255,0.1) 0%, rgba(255,107,157,0.05) 40%, transparent 70%); pointer-events: none; animation: glowPulse 6s ease-in-out infinite; }
   .cta-section h2 { font-family: 'Playfair Display', serif; font-weight: 800; font-size: clamp(2.2rem, 5.5vw, 4rem); letter-spacing: -0.03em; line-height: 1.08; margin-bottom: 1.25rem; max-width: 700px; margin-left: auto; margin-right: auto; }
@@ -112,41 +218,75 @@
   .cta-section > p { color: var(--text-muted); font-size: 1.05rem; margin-bottom: 2.5rem; }
   .cta-sub { font-size: 0.72rem; color: var(--text-faint); margin-top: 1.5rem; letter-spacing: 0.1em; text-transform: uppercase; }
   footer { border-top: 1px solid var(--border); text-align: center; padding: 2.5rem; font-size: 0.75rem; color: var(--text-faint); }
+
   body::after { content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 9999; opacity: 0.025; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); background-repeat: repeat; background-size: 128px 128px; }
   .cursor-glow { position: fixed; width: 300px; height: 300px; border-radius: 50%; background: radial-gradient(circle, rgba(176,106,255,0.06), transparent 70%); pointer-events: none; z-index: 0; transform: translate(-50%,-50%); will-change: left, top; }
+
+  @media (max-width: 900px) {
+    .match-wrap, .phone-inner { grid-template-columns: 1fr; gap: 3rem; }
+    .phone-mock { transform: none; }
+  }
   @media (max-width: 768px) {
     nav { padding: 1rem 1.25rem; } .nav-links { display: none; }
     .steps-grid { grid-template-columns: 1fr; }
     .trust-item { border-right: none; border-bottom: 1px solid var(--border); }
-    .why-grid { grid-template-columns: 1fr; } .why-col-header.old, .why-cell.old { display: none; }
     .cursor-glow { display: none; }
+    section { padding: 5rem 1.25rem; }
+    .phone-section { padding: 5rem 1.25rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+    html { scroll-behavior: auto; }
+    .reveal, .reveal-scale { opacity: 1; transform: none; }
   }
 </style>
 </head>
-<body>
+<body class="gated">
+
+<!-- AGE GATE -->
+<div class="age-gate" id="ageGate">
+  <div class="age-modal">
+    <div class="age-logo">LSL<span>.</span></div>
+    <div class="age-rule"></div>
+    <h2>A community for <em>adults only</em></h2>
+    <p>LSL is a private, members-only community for consenting adults. By entering, you confirm that you are 18 years of age or older and that adult-oriented content is legal to view in your location.</p>
+    <div class="age-actions">
+      <button class="age-enter" onclick="enterSite()">I'm 18 or older — Enter</button>
+      <button class="age-leave" onclick="window.location.href='https://www.google.com'">I'm under 18 — Take me back</button>
+    </div>
+    <p class="age-fine">Discreet · Private · Members-Only</p>
+  </div>
+</div>
+
 <div class="cursor-glow" id="cursorGlow"></div>
+
 <nav>
   <div class="nav-logo">LSL<span>.</span></div>
   <ul class="nav-links">
+    <li><a href="#matching">Smart Matching</a></li>
     <li><a href="#how">How It Works</a></li>
-    <li><a href="#why">Why LSL</a></li>
-    <li><a href="#events">Events</a></li>
+    <li><a href="#app">The App</a></li>
+    <li><a href="#pricing">Pricing</a></li>
   </ul>
-  <button class="nav-cta">Join the Community</button>
+  <a href="dashboard.html" class="nav-cta">Join the Community</a>
 </nav>
+
+<!-- HERO -->
 <div class="hero">
   <div class="hero-orb hero-orb-1"></div>
   <div class="hero-orb hero-orb-2"></div>
   <div class="hero-orb hero-orb-3"></div>
-  <div class="hero-badge"><span class="dot"></span> Members-Only Community</div>
-  <h1>The Lifestyle Community<br>You've Been <em>Looking For</em></h1>
-  <p class="hero-sub">Connect with like-minded couples and singles near you. Browse real local events, verified profiles, and private messaging — all in one place.</p>
+  <div class="hero-badge"><span class="dot"></span> Now in Los Angeles · Members-Only</div>
+  <h1>The Lifestyle App<br>That <em>Gets You</em></h1>
+  <p class="hero-sub">Smart matching that learns what you're actually into. Real local events. Verified members. Right on your phone — <strong>one flat price, $14.99/month</strong>. No tiers, no upsells, no games.</p>
   <div class="hero-actions">
     <a href="dashboard.html" class="btn-primary">Join the Community</a>
-    <a href="#how" class="btn-ghost">See How It Works</a>
+    <a href="#matching" class="btn-ghost">Try Smart Matching</a>
   </div>
   <p class="hero-disclaimer">Discreet &nbsp;·&nbsp; Members-Only &nbsp;·&nbsp; Always Private</p>
 </div>
+
+<!-- TRUST BAR -->
 <div class="trust-bar">
   <div class="trust-item">
     <div class="trust-icon-wrap purple"><svg viewBox="0 0 24 24" fill="none" stroke="#B06AFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><circle cx="12" cy="16.5" r="1.5"/></svg></div>
@@ -161,6 +301,51 @@
     <div><span class="trust-label">Real Local Events</span><span class="trust-sub">Updated by the community</span></div>
   </div>
 </div>
+
+<!-- SMART MATCHING DEMO -->
+<section id="matching">
+  <p class="section-label reveal">Smart Matching</p>
+  <h2 class="section-title reveal delay-1">Stop Scrolling.<br><em>Start Matching.</em></h2>
+  <p class="section-sub reveal delay-2">Other platforms make you dig through hundreds of profiles. LSL learns your preferences and does the digging for you. Try it — tap what you're into.</p>
+  <div class="match-wrap">
+    <div class="match-copy reveal">
+      <p class="chip-label">Your preferences</p>
+      <div class="chips" id="chips">
+        <button class="chip on" data-k="drinks">Dinner &amp; drinks first</button>
+        <button class="chip on" data-k="house">House parties</button>
+        <button class="chip" data-k="hotel">Hotel events</button>
+        <button class="chip" data-k="clubs">Clubs &amp; socials</button>
+        <button class="chip on" data-k="couples">Couples only</button>
+        <button class="chip" data-k="singles">Open to singles</button>
+        <button class="chip" data-k="weekends">Weekends only</button>
+        <button class="chip" data-k="travel">Open to travel</button>
+      </div>
+      <p class="match-hint">Tap preferences on and off — the match score updates live, exactly like it will in the app.</p>
+    </div>
+    <div class="match-card reveal-scale delay-1">
+      <div class="match-names">J &amp; M</div>
+      <div class="match-meta">Silver Lake · 4 mi away <span class="vbadge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>Verified</span></div>
+      <div class="ring-wrap">
+        <svg width="190" height="190" viewBox="0 0 190 190">
+          <defs>
+            <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#B06AFF"/>
+              <stop offset="60%" stop-color="#FF6B9D"/>
+              <stop offset="100%" stop-color="#FFD080"/>
+            </linearGradient>
+          </defs>
+          <circle class="ring-bg" cx="95" cy="95" r="82"/>
+          <circle class="ring-fg" id="ringFg" cx="95" cy="95" r="82"/>
+        </svg>
+        <div class="ring-num"><span class="val" id="scoreVal">0</span><span class="lbl">Match Score</span></div>
+      </div>
+      <p class="match-verdict" id="verdict"></p>
+      <div class="match-tags" id="matchTags"></div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
 <section id="how">
   <p class="section-label reveal">How It Works</p>
   <h2 class="section-title reveal delay-1">Getting Started<br>Takes Minutes</h2>
@@ -170,13 +355,13 @@
       <span class="step-num">01</span>
       <div class="step-icon i1"><svg viewBox="0 0 24 24" fill="none" stroke="#B06AFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
       <h3>Create Your Profile</h3>
-      <p>Set up as a couple or single. Add your preferences, location, and a photo. You control what's visible and to whom.</p>
+      <p>Set up as a couple or single. Pick your preferences, location, and a photo. You control what's visible and to whom.</p>
     </div>
     <div class="step reveal-scale delay-2">
       <span class="step-num">02</span>
-      <div class="step-icon i2"><svg viewBox="0 0 24 24" fill="none" stroke="#FF6B9D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></div>
-      <h3>Browse &amp; Connect</h3>
-      <p>Search by location, interests, and availability. Send a message, request a connection, or show interest anonymously.</p>
+      <div class="step-icon i2"><svg viewBox="0 0 24 24" fill="none" stroke="#FF6B9D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></div>
+      <h3>Get Matched</h3>
+      <p>Smart matching surfaces couples and singles who actually fit your preferences and your pace — not just whoever's closest.</p>
     </div>
     <div class="step reveal-scale delay-3">
       <span class="step-num">03</span>
@@ -186,51 +371,218 @@
     </div>
   </div>
 </section>
-<div class="why-section" id="why">
-  <div class="why-inner">
-    <p class="section-label reveal">Why LSL</p>
-    <h2 class="section-title reveal delay-1">Built Different.<br>On Purpose.</h2>
-    <p class="section-sub reveal delay-2">Every other platform was built for a different era. We built this for now.</p>
-    <div class="why-grid reveal-scale delay-3">
-      <div>
-        <div class="why-col-header old">The Old Way</div>
-        <div class="why-cell old"><span class="why-icon"><svg viewBox="0 0 12 12" fill="none" stroke="#3E3A55" stroke-width="2"><path d="M2 2l8 8M10 2l-8 8"/></svg></span>Clunky, outdated interfaces</div>
-        <div class="why-cell old"><span class="why-icon"><svg viewBox="0 0 12 12" fill="none" stroke="#3E3A55" stroke-width="2"><path d="M2 2l8 8M10 2l-8 8"/></svg></span>Fake profiles, no verification</div>
-        <div class="why-cell old"><span class="why-icon"><svg viewBox="0 0 12 12" fill="none" stroke="#3E3A55" stroke-width="2"><path d="M2 2l8 8M10 2l-8 8"/></svg></span>No real local events</div>
-        <div class="why-cell old"><span class="why-icon"><svg viewBox="0 0 12 12" fill="none" stroke="#3E3A55" stroke-width="2"><path d="M2 2l8 8M10 2l-8 8"/></svg></span>Zero privacy controls</div>
-        <div class="why-cell old"><span class="why-icon"><svg viewBox="0 0 12 12" fill="none" stroke="#3E3A55" stroke-width="2"><path d="M2 2l8 8M10 2l-8 8"/></svg></span>No real community support</div>
+
+<!-- PHONE / PWA -->
+<div class="phone-section" id="app">
+  <div class="phone-orb"></div>
+  <div class="phone-inner">
+    <div>
+      <p class="section-label reveal">The App</p>
+      <h2 class="section-title reveal delay-1">On Your Phone.<br><em>Not in the App Store.</em></h2>
+      <p class="section-sub reveal delay-2" style="margin-bottom:3rem;">LSL installs straight from your browser to your home screen. No app store account trail, no family-shared purchase history, no censored "app store version."</p>
+      <div class="phone-feature reveal delay-1">
+        <div class="pfi"><svg viewBox="0 0 24 24" fill="none" stroke="#B06AFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="3"/><path d="M12 18h.01"/></svg></div>
+        <div><h4>Installs like a real app</h4><p>Add it to your home screen in two taps. Full-screen, fast, and it even works with a spotty connection.</p></div>
       </div>
-      <div>
-        <div class="why-col-header new">The LSL Way</div>
-        <div class="why-cell new"><span class="why-icon"><svg viewBox="0 0 12 12" fill="none" stroke="#00E5A0" stroke-width="2"><path d="M2 6l3 3 5-5"/></svg></span>Clean, modern, mobile-friendly</div>
-        <div class="why-cell new"><span class="why-icon"><svg viewBox="0 0 12 12" fill="none" stroke="#00E5A0" stroke-width="2"><path d="M2 6l3 3 5-5"/></svg></span>Verified members only</div>
-        <div class="why-cell new"><span class="why-icon"><svg viewBox="0 0 12 12" fill="none" stroke="#00E5A0" stroke-width="2"><path d="M2 6l3 3 5-5"/></svg></span>Community-driven event board</div>
-        <div class="why-cell new"><span class="why-icon"><svg viewBox="0 0 12 12" fill="none" stroke="#00E5A0" stroke-width="2"><path d="M2 6l3 3 5-5"/></svg></span>You control your visibility</div>
-        <div class="why-cell new"><span class="why-icon"><svg viewBox="0 0 12 12" fill="none" stroke="#00E5A0" stroke-width="2"><path d="M2 6l3 3 5-5"/></svg></span>Built by community, for community</div>
+      <div class="phone-feature reveal delay-2">
+        <div class="pfi"><svg viewBox="0 0 24 24" fill="none" stroke="#FF6B9D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+        <div><h4>Discreet by design</h4><p>A quiet "LSL" icon. Nothing revealing on your screen, in your notifications, or on your bank statement.</p></div>
+      </div>
+      <div class="phone-feature reveal delay-3">
+        <div class="pfi"><svg viewBox="0 0 24 24" fill="none" stroke="#FFD080" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+        <div><h4>Always current</h4><p>Updates arrive instantly — no waiting on app store approvals, no forced downloads.</p></div>
+      </div>
+    </div>
+    <div class="phone-mock-wrap reveal-scale">
+      <div class="phone-mock">
+        <div class="phone-screen">
+          <div class="phone-notch"></div>
+          <div class="ps-head"><span class="ps-logo">LSL<span>.</span></span><span class="ps-avatar"></span></div>
+          <div class="ps-greet"><div class="g1">Good evening, J &amp; T</div><div class="g2">3 new matches near Los Angeles</div></div>
+          <div class="ps-stats">
+            <div class="ps-stat"><div class="n">12</div><div class="l">Matches</div></div>
+            <div class="ps-stat"><div class="n">4</div><div class="l">Events</div></div>
+            <div class="ps-stat"><div class="n">7</div><div class="l">Messages</div></div>
+          </div>
+          <div class="ps-sec">Top matches tonight</div>
+          <div class="ps-match"><div class="pm-av a1"></div><div class="pm-txt"><div class="pm-n">J &amp; M</div><div class="pm-d">Silver Lake · 4 mi</div></div><div class="pm-score">92%</div></div>
+          <div class="ps-match"><div class="pm-av a2"></div><div class="pm-txt"><div class="pm-n">R &amp; C</div><div class="pm-d">Pasadena · 9 mi</div></div><div class="pm-score">88%</div></div>
+          <div class="ps-match"><div class="pm-av a3"></div><div class="pm-txt"><div class="pm-n">Dani</div><div class="pm-d">Long Beach · 14 mi</div></div><div class="pm-score">84%</div></div>
+          <div class="ps-nav">
+            <svg class="act" viewBox="0 0 24 24" fill="none" stroke="#B06AFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="#F2EFF9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="#F2EFF9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="#F2EFF9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </div>
+
+<!-- PRICING -->
+<section id="pricing">
+  <p class="section-label reveal">Pricing</p>
+  <h2 class="section-title reveal delay-1">One Flat Price.<br><em>Everything Included.</em></h2>
+  <p class="section-sub reveal delay-2">The big platforms nickel-and-dime you with tiers, upsells, and "premium" walls. We don't. Here's the honest comparison.</p>
+  <div class="price-table-wrap reveal-scale delay-2">
+    <table class="price-table">
+      <thead>
+        <tr>
+          <th></th>
+          <th class="col-lsl">LSL<span class="best">Best Value</span></th>
+          <th>Kasidie</th>
+          <th>SDC</th>
+          <th>SLS</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Monthly price</td>
+          <td class="col-lsl"><span class="price-big">$14.99<small>/mo</small></span></td>
+          <td class="p-muted">~$20–24/mo</td>
+          <td class="p-muted">~$30/mo</td>
+          <td class="p-muted">~$25/mo</td>
+        </tr>
+        <tr>
+          <td>Mobile app experience</td>
+          <td class="col-lsl yes">✓ Installs on your phone</td>
+          <td class="no">✗ Browser only</td>
+          <td class="no">Dated</td>
+          <td class="no">Dated</td>
+        </tr>
+        <tr>
+          <td>Preference-based smart matching</td>
+          <td class="col-lsl yes">✓</td>
+          <td class="no">✗</td>
+          <td class="no">✗</td>
+          <td class="no">✗</td>
+        </tr>
+        <tr>
+          <td>Real-time community events</td>
+          <td class="col-lsl yes">✓</td>
+          <td class="yes">✓</td>
+          <td class="p-muted">Limited</td>
+          <td class="p-muted">Limited</td>
+        </tr>
+        <tr>
+          <td>Modern, private design</td>
+          <td class="col-lsl yes">✓</td>
+          <td class="no">✗</td>
+          <td class="no">✗</td>
+          <td class="no">✗</td>
+        </tr>
+        <tr>
+          <td>Flat pricing, no upsells</td>
+          <td class="col-lsl yes">✓</td>
+          <td class="no">✗ Sliding scale</td>
+          <td class="no">✗ Tiers</td>
+          <td class="no">✗ Tiers</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="price-note reveal delay-3">Competitor pricing reflects typical month-to-month advertised rates as of 2026 and may vary by region and promotion.</p>
+</section>
+
+<!-- CTA -->
 <section class="cta-section">
   <h2 class="reveal">The community is<br>already here. <em>Come find<br>your people.</em></h2>
   <p class="reveal delay-1">Discreet billing. No spam. Cancel anytime.</p>
   <div class="reveal delay-2"><a href="dashboard.html" class="btn-primary" style="font-size:1.05rem;padding:1rem 2.8rem;">Create Your Free Profile</a></div>
   <p class="cta-sub reveal delay-3">Members-Only &nbsp;·&nbsp; Verified Profiles &nbsp;·&nbsp; Real Local Events</p>
 </section>
+
 <footer><p>© 2026 LSL &nbsp;·&nbsp; All rights reserved &nbsp;·&nbsp; Members-only platform &nbsp;·&nbsp; 18+ only</p></footer>
+
 <script>
+// ── Age gate ──
+function enterSite() {
+  try { sessionStorage.setItem('lsl-age-ok', '1'); } catch(e) {}
+  const g = document.getElementById('ageGate');
+  g.style.opacity = '0';
+  g.style.transition = 'opacity 0.5s ease';
+  document.body.classList.remove('gated');
+  setTimeout(() => g.classList.add('hidden'), 500);
+}
+try {
+  if (sessionStorage.getItem('lsl-age-ok') === '1') {
+    document.getElementById('ageGate').classList.add('hidden');
+    document.body.classList.remove('gated');
+  }
+} catch(e) {}
+
+// ── Scroll reveals ──
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
 }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
 document.querySelectorAll('.reveal, .reveal-scale').forEach(el => observer.observe(el));
+
+// ── Cursor glow ──
 const glow = document.getElementById('cursorGlow');
 let mx = 0, my = 0, gx = 0, gy = 0;
 document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
-function ag() { gx += (mx-gx)*0.08; gy += (my-gy)*0.08; glow.style.left = gx+'px'; glow.style.top = gy+'px'; requestAnimationFrame(ag); }
-ag();
+(function ag() { gx += (mx-gx)*0.08; gy += (my-gy)*0.08; glow.style.left = gx+'px'; glow.style.top = gy+'px'; requestAnimationFrame(ag); })();
+
+// ── Nav + parallax ──
 const nav = document.querySelector('nav');
-window.addEventListener('scroll', () => { nav.style.borderBottomColor = window.scrollY > 80 ? 'rgba(176,106,255,0.08)' : 'rgba(255,255,255,0.04)'; }, { passive: true });
-window.addEventListener('scroll', () => { const y = window.scrollY; document.querySelectorAll('.hero-orb').forEach((o,i) => { o.style.transform = `translateY(${y*(0.15+i*0.08)}px)`; }); }, { passive: true });
+window.addEventListener('scroll', () => {
+  nav.style.borderBottomColor = window.scrollY > 80 ? 'rgba(176,106,255,0.08)' : 'rgba(255,255,255,0.04)';
+  const y = window.scrollY;
+  document.querySelectorAll('.hero-orb').forEach((o,i) => { o.style.transform = `translateY(${y*(0.15+i*0.08)}px)`; });
+}, { passive: true });
+
+// ── Smart matching demo ──
+const theirPrefs = { drinks: 1, house: 1, couples: 1, hotel: 1 };
+const prefLabels = { drinks: 'Dinner & drinks', house: 'House parties', hotel: 'Hotel events', clubs: 'Clubs & socials', couples: 'Couples only', singles: 'Open to singles', weekends: 'Weekends', travel: 'Travel' };
+const ring = document.getElementById('ringFg');
+const C = 2 * Math.PI * 82;
+ring.style.strokeDasharray = C;
+ring.style.strokeDashoffset = C;
+let displayed = 0, rafId = null;
+
+function computeScore() {
+  const on = [...document.querySelectorAll('.chip.on')].map(c => c.dataset.k);
+  if (on.length === 0) return { score: 0, shared: [] };
+  const shared = on.filter(k => theirPrefs[k]);
+  const score = Math.min(99, Math.round(38 + shared.length * 14 + (on.length - shared.length) * 2));
+  return { score, shared };
+}
+
+function renderScore() {
+  const { score, shared } = computeScore();
+  ring.style.strokeDashoffset = C * (1 - score / 100);
+  cancelAnimationFrame(rafId);
+  (function tick() {
+    displayed += (score - displayed) * 0.12;
+    if (Math.abs(score - displayed) < 0.5) displayed = score;
+    document.getElementById('scoreVal').textContent = Math.round(displayed);
+    if (displayed !== score) rafId = requestAnimationFrame(tick);
+  })();
+  const v = document.getElementById('verdict');
+  if (score === 0) v.innerHTML = 'Pick a few preferences to see how you match.';
+  else if (score >= 85) v.innerHTML = '<strong>Exceptional match.</strong> You and J &amp; M want the same things.';
+  else if (score >= 65) v.innerHTML = '<strong>Strong match.</strong> Plenty of common ground to start with.';
+  else if (score >= 45) v.innerHTML = '<strong>Worth a hello.</strong> Some overlap — the rest is chemistry.';
+  else v.innerHTML = 'Different vibes — smart matching would keep looking for you.';
+  const tags = document.getElementById('matchTags');
+  tags.innerHTML = Object.keys(theirPrefs).map(k =>
+    `<span class="mtag ${shared.includes(k) ? '' : 'off'}">${prefLabels[k]}</span>`
+  ).join('');
+}
+
+document.getElementById('chips').addEventListener('click', e => {
+  const chip = e.target.closest('.chip');
+  if (!chip) return;
+  chip.classList.toggle('on');
+  renderScore();
+});
+setTimeout(renderScore, 600);
+
+// ── PWA ──
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+}
 </script>
 </body>
 </html>
